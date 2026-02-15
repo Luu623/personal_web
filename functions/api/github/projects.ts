@@ -22,6 +22,17 @@ interface RepositoriesResponse {
   repositories: GitHubRepository[]
 }
 
+interface GraphQLProjectsResponse {
+  data?: {
+    user?: {
+      repositories?: {
+        nodes: GitHubRepository[]
+      }
+    }
+  }
+  errors?: { message?: string }[]
+}
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const username = 'Luu623'
   const token = context.env.GITHUB_TOKEN
@@ -79,7 +90,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       throw new Error(`GitHub API error: ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as GraphQLProjectsResponse
 
     if (data.errors) {
       throw new Error(data.errors[0]?.message || 'GraphQL error')

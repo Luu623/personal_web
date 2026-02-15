@@ -21,6 +21,20 @@ interface GitHubContributionWeek {
   contributionDays: GitHubContributionDay[]
 }
 
+interface GraphQLResponse {
+  data?: {
+    user?: {
+      contributionsCollection?: {
+        contributionCalendar?: {
+          totalContributions: number
+          weeks: GitHubContributionWeek[]
+        }
+      }
+    }
+  }
+  errors?: { message?: string }[]
+}
+
 function getLevel(count: number): 0 | 1 | 2 | 3 | 4 {
   if (count === 0) return 0
   if (count <= 3) return 1
@@ -113,7 +127,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       throw new Error(`GitHub API error: ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as GraphQLResponse
 
     if (data.errors) {
       throw new Error(data.errors[0]?.message || 'GraphQL error')
