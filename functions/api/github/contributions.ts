@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+interface Env {
+  GITHUB_TOKEN: string
+}
 
 interface ContributionDay {
   date: string
@@ -19,7 +21,6 @@ interface GitHubContributionWeek {
   contributionDays: GitHubContributionDay[]
 }
 
-// Calculate level based on contribution count
 function getLevel(count: number): 0 | 1 | 2 | 3 | 4 {
   if (count === 0) return 0
   if (count <= 3) return 1
@@ -28,7 +29,6 @@ function getLevel(count: number): 0 | 1 | 2 | 3 | 4 {
   return 4
 }
 
-// Transform GitHub API response to our format
 function transformContributions(weeks: GitHubContributionWeek[]): ContributionWeek[] {
   return weeks.map((week) => ({
     days: week.contributionDays.map((day) => ({
@@ -39,31 +39,34 @@ function transformContributions(weeks: GitHubContributionWeek[]): ContributionWe
   }))
 }
 
-export async function GET(request: NextRequest) {
+export const onRequest: PagesFunction<Env> = async (context) => {
   const username = 'Luu623'
-  const token = process.env.GITHUB_TOKEN
+  const token = context.env.GITHUB_TOKEN
 
   if (!token) {
-    return NextResponse.json({ error: 'GitHub token not configured' }, { status: 500 })
+    return new Response(JSON.stringify({ error: 'GitHub token not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 
-  // Get year parameter from query string
-  const { searchParams } = new URL(request.url)
-  const yearParam = searchParams.get('year')
+  const url = new URL(context.request.url)
+  const yearParam = url.searchParams.get('year')
 
   let fromDate: string
   let toDate: string
 
   if (yearParam) {
-    // If year is specified, use that year's date range
     const year = parseInt(yearParam, 10)
     if (isNaN(year) || year < 2008 || year > new Date().getFullYear()) {
-      return NextResponse.json({ error: 'Invalid year parameter' }, { status: 400 })
+      return new Response(JSON.stringify({ error: 'Invalid year parameter' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
-    fromDate = new Date(year, 0, 1).toISOString() // January 1st of the year
-    toDate = new Date(year, 11, 31, 23, 59, 59).toISOString() // December 31st of the year
+    fromDate = new Date(year, 0, 1).toISOString()
+    toDate = new Date(year, 11, 31, 23, 59, 59).toISOString()
   } else {
-    // Default behavior: past year
     const today = new Date()
     const oneYearAgo = new Date(today)
     oneYearAgo.setFullYear(today.getFullYear() - 1)
@@ -125,12 +128,17 @@ export async function GET(request: NextRequest) {
     const weeks = transformContributions(contributionsCollection.weeks)
     const totalContributions = contributionsCollection.totalContributions
 
-    return NextResponse.json({
-      weeks,
-      totalContributions,
+    return new Response(JSON.stringify({ weeks, totalContributions }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+      },
     })
   } catch (error) {
     console.error('Error fetching GitHub contributions:', error)
-    return NextResponse.json({ error: 'Failed to fetch contributions' }, { status: 500 })
+    return new Response(JSON.stringify({ error: 'Failed to fetch contributions' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }

@@ -1,4 +1,6 @@
-import { NextResponse } from 'next/server'
+interface Env {
+  GITHUB_TOKEN: string
+}
 
 interface GitHubRepository {
   name: string
@@ -20,12 +22,15 @@ interface RepositoriesResponse {
   repositories: GitHubRepository[]
 }
 
-export async function GET() {
+export const onRequest: PagesFunction<Env> = async (context) => {
   const username = 'Luu623'
-  const token = process.env.GITHUB_TOKEN
+  const token = context.env.GITHUB_TOKEN
 
   if (!token) {
-    return NextResponse.json({ error: 'GitHub token not configured' }, { status: 500 })
+    return new Response(JSON.stringify({ error: 'GitHub token not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 
   const query = `
@@ -82,14 +87,21 @@ export async function GET() {
 
     const repositories = data.data?.user?.repositories?.nodes || []
 
-    // Filter out forks and archived repos, then sort by stars
     const filteredRepos = repositories
       .filter((repo: GitHubRepository) => !repo.isFork && !repo.isArchived)
       .slice(0, 10)
 
-    return NextResponse.json({ repositories: filteredRepos } as RepositoriesResponse)
+    return new Response(JSON.stringify({ repositories: filteredRepos } as RepositoriesResponse), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    })
   } catch (error) {
     console.error('Error fetching GitHub projects:', error)
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    return new Response(JSON.stringify({ error: 'Failed to fetch projects' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
