@@ -15,7 +15,7 @@ const Header = () => {
           aria-label={siteMetadata.headerTitle}
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
-          <div className="h-6 w-6">
+          <div className="h-8 w-8">
             <Logo />
           </div>
           {typeof siteMetadata.headerTitle === 'string' ? (
