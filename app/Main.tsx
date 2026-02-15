@@ -1,6 +1,4 @@
 import Image from 'next/image'
-import siteMetadata from '@/data/siteMetadata'
-import SocialIcon from '@/components/social-icons'
 import GitHubContributions from '@/components/GitHubContributions'
 
 export default function Home() {
@@ -63,46 +61,11 @@ export default function Home() {
               Open to opportunities
             </span>
           </div>
-
-          {/* Tech Stack Tags */}
-          <div className="mb-10 flex flex-wrap justify-center gap-2">
-            {['TypeScript', 'React', 'Next.js', 'Node.js', 'Python'].map((tech) => (
-              <span
-                key={tech}
-                className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-700"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          {/* Social Links */}
-          <div className="flex items-center gap-5">
-            {siteMetadata.github && (
-              <SocialIcon kind="github" href={siteMetadata.github} size={6} />
-            )}
-            {siteMetadata.email && (
-              <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={6} />
-            )}
-            {siteMetadata.x && <SocialIcon kind="x" href={siteMetadata.x} size={6} />}
-          </div>
         </div>
-      </section>
 
-      {/* Divider */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="border-t border-gray-200 dark:border-gray-800"></div>
-      </div>
-
-      {/* GitHub Contributions */}
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center">
-          <h2 className="mb-4 text-sm font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-            GitHub Contributions
-          </h2>
-          <div className="w-full max-w-2xl">
-            <GitHubContributions />
-          </div>
+        {/* GitHub Contributions - directly after personal info */}
+        <div className="w-full max-w-2xl pt-8">
+          <GitHubContributions />
         </div>
       </section>
     </div>

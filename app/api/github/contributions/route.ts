@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 interface ContributionDay {
   date: string
@@ -39,7 +39,7 @@ function transformContributions(weeks: GitHubContributionWeek[]): ContributionWe
   }))
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const username = 'Luu623'
   const token = process.env.GITHUB_TOKEN
 
@@ -47,14 +47,29 @@ export async function GET() {
     return NextResponse.json({ error: 'GitHub token not configured' }, { status: 500 })
   }
 
-  // Calculate date range (past year)
-  const today = new Date()
-  const oneYearAgo = new Date(today)
-  oneYearAgo.setFullYear(today.getFullYear() - 1)
+  // Get year parameter from query string
+  const { searchParams } = new URL(request.url)
+  const yearParam = searchParams.get('year')
 
-  // GitHub GraphQL API expects ISO 8601 format
-  const fromDate = oneYearAgo.toISOString()
-  const toDate = today.toISOString()
+  let fromDate: string
+  let toDate: string
+
+  if (yearParam) {
+    // If year is specified, use that year's date range
+    const year = parseInt(yearParam, 10)
+    if (isNaN(year) || year < 2008 || year > new Date().getFullYear()) {
+      return NextResponse.json({ error: 'Invalid year parameter' }, { status: 400 })
+    }
+    fromDate = new Date(year, 0, 1).toISOString() // January 1st of the year
+    toDate = new Date(year, 11, 31, 23, 59, 59).toISOString() // December 31st of the year
+  } else {
+    // Default behavior: past year
+    const today = new Date()
+    const oneYearAgo = new Date(today)
+    oneYearAgo.setFullYear(today.getFullYear() - 1)
+    fromDate = oneYearAgo.toISOString()
+    toDate = today.toISOString()
+  }
 
   const query = `
     query($username: String!, $from: DateTime!, $to: DateTime!) {

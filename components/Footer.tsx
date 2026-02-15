@@ -12,9 +12,7 @@ export default function Footer() {
           {siteMetadata.email && (
             <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={5} />
           )}
-          {siteMetadata.twitter && (
-            <SocialIcon kind="twitter" href={siteMetadata.twitter} size={5} />
-          )}
+          {siteMetadata.x && <SocialIcon kind="x" href={siteMetadata.x} size={5} />}
           {siteMetadata.linkedin && (
             <SocialIcon kind="linkedin" href={siteMetadata.linkedin} size={5} />
           )}

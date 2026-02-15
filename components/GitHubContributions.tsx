@@ -130,6 +130,24 @@ const levelColors = {
 
 const weekdays = ['日', '一', '二', '三', '四', '五', '六']
 
+// Generate relative year options: This Year, This Year - 1, This Year - 2, etc.
+function getYearOptions(): { label: string; year: number }[] {
+  const currentYear = new Date().getFullYear()
+  const options: { label: string; year: number }[] = []
+
+  // Generate options for current year and past 4 years
+  for (let i = 0; i < 5; i++) {
+    const year = currentYear - i
+    if (i === 0) {
+      options.push({ label: 'This Year', year })
+    } else {
+      options.push({ label: `${year}`, year })
+    }
+  }
+
+  return options
+}
+
 export default function GitHubContributions() {
   const [mounted, setMounted] = useState(false)
   const [weeks, setWeeks] = useState<ContributionWeek[]>([])
@@ -142,14 +160,23 @@ export default function GitHubContributions() {
     show: false,
     content: '',
   })
+  const [selectedYear, setSelectedYear] = useState<number>(() => {
+    return new Date().getFullYear() // Default to this year
+  })
+  const yearOptions = useMemo(() => getYearOptions(), [])
   const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     setMounted(true)
+  }, [])
 
+  useEffect(() => {
     async function fetchContributions() {
+      setIsLoading(true)
+      setError(null)
       try {
-        const response = await fetch('/api/github/contributions')
+        const url = `/api/github/contributions?year=${selectedYear}`
+        const response = await fetch(url)
 
         if (!response.ok) {
           throw new Error('Failed to fetch contributions')
@@ -170,8 +197,10 @@ export default function GitHubContributions() {
       }
     }
 
-    fetchContributions()
-  }, [])
+    if (mounted) {
+      fetchContributions()
+    }
+  }, [mounted, selectedYear])
 
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks])
 
@@ -205,24 +234,36 @@ export default function GitHubContributions() {
 
   return (
     <div className="contributions-container overflow-hidden rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-          <span className="text-primary-500">{totalContributions.toLocaleString()}</span>{' '}
-          contributions in the last year
-          {error && (
-            <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
-              ({error})
-            </span>
-          )}
-        </h3>
-        <a
-          href="https://github.com/Luu623"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-primary-500 dark:hover:text-primary-400 text-xs text-gray-500 dark:text-gray-400"
-        >
-          @Luu623 on GitHub
-        </a>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <span className="text-primary-500">{totalContributions.toLocaleString()}</span>{' '}
+            contributions in {selectedYear}
+            {error && (
+              <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+                ({error})
+              </span>
+            )}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Year selector */}
+          <div className="flex flex-wrap gap-1">
+            {yearOptions.map((option) => (
+              <button
+                key={option.year}
+                onClick={() => setSelectedYear(option.year)}
+                className={`rounded px-2 py-1 text-xs transition-colors ${
+                  selectedYear === option.year
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="relative">
