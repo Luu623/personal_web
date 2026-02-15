@@ -8,9 +8,10 @@ interface WeChatIconButtonProps {
   qrCodeUrl: string
   wechatId: string
   size?: number
+  className?: string
 }
 
-export default function WeChatIconButton({ qrCodeUrl, wechatId, size = 6 }: WeChatIconButtonProps) {
+export default function WeChatIconButton({ qrCodeUrl, wechatId, size = 6, className }: WeChatIconButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   if (!qrCodeUrl || !wechatId) return null
@@ -19,11 +20,11 @@ export default function WeChatIconButton({ qrCodeUrl, wechatId, size = 6 }: WeCh
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="text-sm text-gray-500 transition hover:text-gray-600"
+        className={className ?? 'text-sm text-gray-500 transition'}
         aria-label="微信"
       >
         <WeChat
-          className={`hover:text-primary-500 dark:hover:text-primary-400 fill-current text-gray-700 dark:text-gray-200 h-${size} w-${size}`}
+          className={`fill-current ${className ? '' : 'hover:text-primary-500 dark:hover:text-primary-400 text-gray-700 dark:text-gray-200'} h-${size} w-${size}`}
         />
       </button>
       <WeChatQrCode
