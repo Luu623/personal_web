@@ -11,7 +11,12 @@ interface WeChatIconButtonProps {
   className?: string
 }
 
-export default function WeChatIconButton({ qrCodeUrl, wechatId, size = 6, className }: WeChatIconButtonProps) {
+export default function WeChatIconButton({
+  qrCodeUrl,
+  wechatId,
+  size = 6,
+  className,
+}: WeChatIconButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   if (!qrCodeUrl || !wechatId) return null
