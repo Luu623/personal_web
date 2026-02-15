@@ -136,13 +136,35 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     })
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
+      const errorText = await response.text()
+      console.error('GitHub API error response:', errorText)
+      return new Response(
+        JSON.stringify({
+          error: 'GitHub API error',
+          status: response.status,
+          details: errorText,
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
 
     const data = (await response.json()) as GraphQLResponse
 
     if (data.errors) {
-      throw new Error(data.errors[0]?.message || 'GraphQL error')
+      console.error('GraphQL errors:', data.errors)
+      return new Response(
+        JSON.stringify({
+          error: 'GraphQL error',
+          details: data.errors,
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
 
     const contributionsCollection = data.data?.user?.contributionsCollection?.contributionCalendar
@@ -162,9 +184,15 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     })
   } catch (error) {
     console.error('Error fetching GitHub contributions:', error)
-    return new Response(JSON.stringify({ error: 'Failed to fetch contributions' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({
+        error: 'Failed to fetch contributions',
+        message: error instanceof Error ? error.message : String(error),
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   }
 }
