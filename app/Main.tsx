@@ -33,12 +33,12 @@ export default function Home() {
 
               {/* Subtitle */}
               <p className="mb-4 text-base text-gray-600 sm:text-lg dark:text-gray-400">
-                软件工程师 / Software Engineer
+                计算机科学与技术学生
               </p>
 
               {/* Description */}
               <p className="mb-6 max-w-md text-sm leading-7 text-gray-500 sm:text-base sm:leading-7 dark:text-gray-400">
-                热爱编程，专注于构建优雅的用户体验。探索技术的无限可能，用代码创造价值。
+                就读于安徽工程大学
               </p>
 
               {/* Location & Status */}
