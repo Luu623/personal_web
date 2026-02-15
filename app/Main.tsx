@@ -2,6 +2,7 @@ import Image from 'next/image'
 import GitHubContributions from '@/components/GitHubContributions'
 import GitHubProjects from '@/components/GitHubProjects'
 import RecentBlogs from '@/components/RecentBlogs'
+import TypewriterName from '@/components/TypewriterName'
 import WeChatIconButton from '@/components/WeChatIconButton'
 import siteMetadata from '@/data/siteMetadata'
 
@@ -28,9 +29,7 @@ export default function Home() {
               </div>
 
               {/* Name */}
-              <h1 className="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
-                Xiangyu Lu
-              </h1>
+              <TypewriterName />
 
               {/* Subtitle */}
               <p className="mb-4 text-base text-gray-600 sm:text-lg dark:text-gray-400">
