@@ -18,6 +18,14 @@ yarn analyze          # Build with bundle analyzer
 
 ## Architecture
 
+### Design System (Vercel-inspired)
+
+- Minimalist, high-contrast design with clean typography
+- Color palette: Neutral grays with blue accent (hue 250)
+- Glassmorphism effects in navigation (backdrop-blur)
+- Custom design tokens in `css/tailwind.css`
+- Utility classes: `.glass`, `.gradient-text`, `.card-hover`
+
 ### Content Management (Contentlayer)
 
 - Content is defined in `contentlayer.config.ts` with two document types: `Blog` and `Authors`
@@ -29,9 +37,19 @@ yarn analyze          # Build with bundle analyzer
 ### Routing Structure
 
 - `app/` - Next.js App Router pages
+- `app/Main.tsx` - Homepage with Hero section and GitHub contributions
+- `app/api/github/contributions/route.ts` - GitHub GraphQL API proxy
 - `app/blog/[...slug]/page.tsx` - Dynamic blog post rendering
 - `app/blog/page/[page]/page.tsx` - Paginated blog listing
 - `app/tags/[tag]/` - Tag-based filtering
+
+### Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| `components/GitHubContributions.tsx` | Contribution heatmap with real GitHub API data |
+| `components/Header.tsx` | Glassmorphism sticky navigation |
+| `components/Footer.tsx` | Minimal footer with social links |
 
 ### Layouts
 
@@ -71,6 +89,13 @@ Defined in `tsconfig.json`:
 | `contentlayer.config.ts` | Blog/Author schemas, MDX plugins, computed fields |
 | `next.config.js` | CSP headers, image domains, webpack config |
 | `components/MDXComponents.tsx` | Custom components usable in MDX |
+| `css/tailwind.css` | Vercel-style design tokens and utility classes |
+
+## Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `GITHUB_TOKEN` | GitHub Personal Access Token for fetching contributions (scope: `read:user`) |
 
 ## Blog Post Frontmatter
 
