@@ -57,11 +57,23 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const username = 'Luu623'
   const token = context.env.GITHUB_TOKEN
 
+  // Debug: log available env keys (remove after debugging)
+  console.log('Available env keys:', Object.keys(context.env))
+
   if (!token) {
-    return new Response(JSON.stringify({ error: 'GitHub token not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({
+        error: 'GitHub token not configured',
+        debug: {
+          hasEnv: !!context.env,
+          envKeys: Object.keys(context.env || {}),
+        },
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   }
 
   const url = new URL(context.request.url)
