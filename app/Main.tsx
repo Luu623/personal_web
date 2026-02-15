@@ -18,11 +18,11 @@ export default function Home() {
               {/* Avatar */}
               <div className="mb-6">
                 <Image
-                  src="/static/images/avatar.png"
+                  src="/static/images/avatar.jpg"
                   alt="Xiangyu Lu"
                   width={100}
                   height={100}
-                  className="rounded-full grayscale transition-all duration-300 hover:grayscale-0"
+                  className="rounded-full grayscale-0 transition-all duration-300 hover:grayscale-0"
                   priority
                 />
               </div>
