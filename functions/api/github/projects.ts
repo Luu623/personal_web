@@ -79,6 +79,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'Luu623-Personal-Web',
       },
       body: JSON.stringify({
         query,
